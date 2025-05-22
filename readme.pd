@@ -1,0 +1,20 @@
+# Aibotti
+
+Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
+Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
+
+Ohjeet miten saat pyörimään omalla koneellasi ja omalla datallasi.
+
+
+
+Docker, eli kontti.
+Jos pyörität palvelua Windows koneella tarvit dockerin ja WSL:n (Windows Subsystem Linux)
+Asenna ensin Docker: https://www.docker.com/products/docker-desktop/
+Sen jälkeen avaa Windows Powershell (komentokehoiteikkuna) 
+ja asenna WSL: wsl --install  
+(By default, the installed Linux distribution will be Ubuntu)
+Käynnistä Ubuntu windows start-valikosta ja luo käyttäjätunnukset.
+Kun olet kirjautunut Ubuntuun, on suositeltavaa päivittää paketit: sudo apt update && sudo apt upgrade
+Ubuntussa "explorer.exe ." näyttää kansion missä järjestelmä on. On suositeltavaa säilyttää projektin tiedostot samassa järjestelmässä.
+
+https://learn.microsoft.com/en-gb/windows/wsl/tutorials/wsl-vscode

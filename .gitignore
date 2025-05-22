@@ -1,0 +1,11 @@
+__pycache__/
+*.pyc
+*.log
+*.jsonl
+*.env
+.venv/
+aibotti/
+C:/AI-botti/
+node_modules/
+.DS_Store
+.env.local
