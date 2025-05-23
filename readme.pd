@@ -15,6 +15,16 @@ Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
 
 Ohjeet miten saat pyörimään omalla koneellasi ja omalla datallasi.
 
+Ollama linuxissa:
+asenna: curl -fsSL https://ollama.com/install.sh | sh
+käynnistä: 
+ollama serve &
+ollama run llama3
+tarkista onko jo päällä:
+(AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$ curl http://localhost:11434
+Ollama is running(AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$
+KÄynnistä kielimalli linux kehoitteesta: ollama run llama3
+
 
 
 Docker, eli kontti.
