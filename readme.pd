@@ -1,4 +1,5 @@
 # Aibotti
+testisivusto: https://samikoskioamk.github.io/ArcticAIBotti/
 
 Linuxissa pitää ajaa virtual environmentissä, joten luo se eka. Esim:
 python3 -m venv AAIBOT

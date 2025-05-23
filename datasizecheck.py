@@ -47,7 +47,7 @@ def check_url(url: str = Query(...)):
 def crawl_check_data(
     url: str = Query(..., description="Root URL to crawl"),
     max_pages: int = Query(500, description="Maximum number of pages to crawl"),
-    content_limit: int = Query(200, description="Number of content pages to include")
+    content_limit: int = Query(300, description="Number of content pages to include")
 ):
     visited = set()
     to_visit = deque([url])
