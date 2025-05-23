@@ -1,5 +1,14 @@
 # Aibotti
 
+Linuxissa pitää ajaa virtual environmentissä, joten luo se eka. Esim:
+python3 -m venv AAIBOT
+source AAIBOT/bin/activate
+Sitten aja tässä jo kaikki projektin tarvitsemat kirjastot: pip install -r requirements.txt
+Käynnistä VS Code: code .
+Kun VS Code käynnissä, muista valita oikea Python Interpreter (ctrl-shif-p)
+Listalta luomasi venv, eli tässä tapauksessa tuo AAIBOT
+
+
 Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
 Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
 

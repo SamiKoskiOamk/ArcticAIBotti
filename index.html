@@ -23,7 +23,7 @@
   <input type="text" id="url-input" placeholder="https://..." style="width:100%;padding:8px;border-radius:4px;border:1px solid #ccc;" />
 
   <button onclick="checkDataAmount()" style="margin-top:10px;width:100%;padding:10px;background:#17a2b8;color:white;border:none;border-radius:4px;cursor:pointer;">
-    Tarkista antamasi URL:n data (100 uusinta sivua)
+    Tarkista antamasi URL:n data (200 uusinta sivua)
   </button>
 
   <div id="vector-status" style="margin-top:15px;color:#333;"></div>
@@ -82,7 +82,7 @@ Esim. 128 chunks × 384 × 4 = 196,608 bytes ≈ 0.19 MB
       🧠 Arvioitu vektorointikoko: <strong>${estimatedChunks}</strong> palaa<br>
       💾 Arvioitu koko: <strong>${totalMB} MB</strong> (${totalBytes.toLocaleString()} tavua)<br>
       🔗 Sivujen määrä: <strong>${pages}</strong><br><br>
-      🧭 <strong>Sivuston rakenne (käydyt sivut):</strong><br>
+      🧭 <strong>Sivuston rakenne (sivut, joissa yli 100 sanaa):</strong><br>
       ${structureList}
       `;
 

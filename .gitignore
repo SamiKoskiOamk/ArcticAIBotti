@@ -9,3 +9,24 @@ C:/AI-botti/
 node_modules/
 .DS_Store
 .env.local
+
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+*.log
+
+# Virtual environments
+venv/
+AAIBOT/
+env/
+
+# VS Code
+.vscode/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# System files
+.DS_Store
+Thumbs.db
