@@ -8,12 +8,17 @@
 <body>
 
   <h1>Tervetuloa Arctic AI-botti esittelysivulle</h1>
-  <p>Tällä sivulla esitellään eri bottiteknologioita. <br>
-  Toiminnallisuudet omissa bokseissaan niin voit valita testata ja valita haluamasi palikat</p>
+  <p>
+    Tällä sivulla esitellään eri bottiteknologioita. <br>
+    Toiminnallisuudet omissa bokseissaan niin voit valita testata ja valita haluamasi palikat<br>
+    Nämä on tarkoituskin olla paikallisesti ajettavia niin ei valitettavasti toimi suoraan tästä, vaan <br>
+    joudut menemään ohjeiden mukaan ja pystyttämään ympäristön omaan haluttuun ympäristöösi<br>
+  </p>
 
 <!-- 🔍 Vaihe 1: Datan tarkistus -->
 <div id="check-box" style="max-width:600px;margin:40px 0 0 20px;padding:20px;border:1px solid #ddd;border-radius:8px;font-family:sans-serif;">
-  <h3>Vaihe 1: Tarkista verkkosivuston sisältö, jota haluat käyttää oman chatbotin datalähteenä</h3>
+  <h3>Website Crawler. <br>
+    Palvelu, jolla voit lukea verkkosivuston sisällön, jota haluat käyttää oman chatbotin datalähteenä</h3>
   <p>
     Mikäli haluat käyttää jotain tiettyä sivua datalähteenä,<br>
     tarkista tällä palvelulla ensin onko sivustolla yleensäkään dataa saatavilla. <br><br>
@@ -98,7 +103,7 @@ Esim. 128 chunks × 384 × 4 = 196,608 bytes ≈ 0.19 MB
 <!-- --------------------------------------------------------------------------------------------------------------->
 <!-- Vaihe 2: Datan vektorointi -->
 <div id="vectorization-box" style="max-width:600px;margin:20px 0 40px 20px;padding:20px;border:1px solid #ddd;border-radius:8px;font-family:sans-serif;">
-  <h3>Vaihe 2: Hakubotin käyttämän datan vektorointi</h3>
+  <h3>Datan vektorointi paikalliseen tiedostoon. </h3>
   <p>
     AI-hakubotti toimii tehokkaasti, kun kaikki käytettävä tieto on <strong>vektoroitu</strong>, eli muunnettu numeromuotoon vektoreihin.<br>
     Vektorointi tehdään <strong>aina etukäteen</strong>, ei joka haun yhteydessä, sillä se vie prosessointitehoa ja aikaa. <br>
@@ -234,6 +239,8 @@ Esim. 128 chunks × 384 × 4 = 196,608 bytes ≈ 0.19 MB
     Dockerin käyttöä varten asenna Docker Desktop täältä: <br>
     👉 <a href="https://www.docker.com/products/docker-desktop/" target="_blank" style="color:#007bff; text-decoration:underline;">
       https://www.docker.com/products/docker-desktop/ <br>
+      Jos virittelet tämän Windows koneellesi tai Windows-serverille niin <br>
+      vaatii myös WSL (Windows Subsystem Linux) asentamisen, koska docker toimii vain Linuxissa. <br>
     </a><br>
     
   </p>

@@ -12,10 +12,11 @@
       <div id="ai-box">
           <div id="ai-info">
           Tämä on paikallisesti toimiva webpage hakukone-widget, <br>
-          jonka voit laittaa verkkosivullesi. <br>
-          Lue ensin vasemman laidan prosessikuvaus, miten tämä toimii ja testaa sitten. <br>
-          Tämä hakubotti toimii täysin paikallisesti. <br>
-          Tietoja ei lähetetä mihinkään.</p>
+          jonka voit lisätä verkkosivullesi yhdellä rivillä. <br>
+          Tämän toiminnallisuus site-widget.js javascriptissä. <br>
+          Vaatii toimiakseen ennakkoon tehdyn vektoroidun datan ja paikallisesti <br>
+          pyörivän kielimallin, kuten Ollama llama3.<br>
+          </p>
           </div>
         <input type="text" id="ai-input" placeholder="💬 Kysy mitä haluat tietää..." />
         <button id="ai-button">Kysy</button>
