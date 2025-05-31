@@ -18,12 +18,13 @@ Ohjeet miten saat pyörimään omalla koneellasi ja omalla datallasi.
 Ollama linuxissa:
 asenna: curl -fsSL https://ollama.com/install.sh | sh
 käynnistä: 
-ollama serve &
+ollama serve &  (en tiiä tarviiko. Voi nakkoa erroria.)
 ollama run llama3
 tarkista onko jo päällä:
 (AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$ curl http://localhost:11434
 Ollama is running(AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$
 KÄynnistä kielimalli linux kehoitteesta: ollama run llama3
+Kun et enää tarvi "killall ollama" tai jos syvemmällä niin "sudo pkill -u ollama"
 
 
 
@@ -37,6 +38,40 @@ Käynnistä Ubuntu windows start-valikosta ja luo käyttäjätunnukset.
 Kun olet kirjautunut Ubuntuun, on suositeltavaa päivittää paketit: sudo apt update && sudo apt upgrade
 Ubuntussa "explorer.exe ." näyttää kansion missä järjestelmä on. On suositeltavaa säilyttää projektin tiedostot samassa järjestelmässä.
 
+Kopioi kaikki JSONL-tiedostot polusta ./VectorDB/ alikansioineen
+Yhdistää ne automaattisesti yhteen tiedostoon: all-data.jsonl
+Luo Ollama-mallin nimeltä oma-malli, joka käyttää all-data.jsonl-embeddingejä
+Käynnistää:
+ollama serve
+ollama create
+
+Dockerin kaikki rimpsut laittaa se varmasti puhtaalta pöydältä:
+docker build --no-cache -t aaibot-rag .
+docker rm -f aaibot-rag
+docker run -d -p 8000:8000 -p 11434:11434 --name aaibot-rag aaibot-rag
+
+tai jos ei tarvi ihan puhtaalta niin:
+docker rm -f aaibot-rag
+docker build -t aaibot-rag .
+docker run -d -p 8000:8000 -p 11434:11434 --name aaibot-rag aaibot-rag
+
+
+
+
+Node.js-proxyn server.js porttiin 8000
+https://docs.docker.com/desktop/features/wsl/#wsl-2-security-in-docker-desktop
+
 https://learn.microsoft.com/en-gb/windows/wsl/tutorials/wsl-vscode
 
 commit testing
+
+
+VectorDB rakenne
+ArcticAI-botti-WSL/
+├── VectorDB/                  ← Käytettävä data. JSONL-tiedostot alikansioineen, jotka ite crawlattu.
+├── rag_vector/
+│   ├── app.py                 ← FastAPI-palvelin
+│   ├── embedder.py            ← Embeddingien luonti
+│   ├── query.py               ← Haku logiikka
+│   └── db/                    ← ChromaDB-tietokanta
+└── Dockerfile                 ← päivitetään tämän mukaan

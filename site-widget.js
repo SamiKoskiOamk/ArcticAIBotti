@@ -14,8 +14,9 @@
           Tämä on paikallisesti toimiva webpage hakukone-widget, <br>
           jonka voit lisätä verkkosivullesi yhdellä rivillä. <br>
           Tämän toiminnallisuus site-widget.js javascriptissä. <br>
-          Vaatii toimiakseen ennakkoon tehdyn vektoroidun datan ja paikallisesti <br>
-          pyörivän kielimallin, kuten Ollama llama3.<br>
+          Vaatii toimiakseen ennakkoon tehdyn vektoroidun datan <br>
+          ja paikallisesti pyörivän kielimallin, <br>
+          kuten Ollama llama3.<br>
           </p>
           </div>
         <input type="text" id="ai-input" placeholder="💬 Kysy mitä haluat tietää..." />
@@ -33,19 +34,24 @@
   wrapper.innerHTML = html;
   document.body.appendChild(wrapper);
 
-  async function sendToBackend(message) {
-    try {
-      const response = await fetch("http://localhost:8000/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ question: message })
-      });
-      const data = await response.json();
-      return data.answer || data.error || "🤖 Ei vastausta.";
-    } catch (err) {
-      return `❌ Virhe: ${err.message}`;
-    }
+async function sendToBackend(message) {
+  try {
+    const response = await fetch("http://localhost:8000/ask", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: "llama3",
+        prompt: message,
+        stream: false
+      })
+    });
+    const data = await response.json();
+    return data.response || "🤖 Ei vastausta.";
+  } catch (err) {
+    return `❌ Virhe: ${err.message}`;
   }
+}
+
 
   document.getElementById("ai-button").onclick = async () => {
     const input = document.getElementById("ai-input").value;
