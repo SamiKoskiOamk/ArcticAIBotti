@@ -1,60 +1,34 @@
-# rag_vector/app.py
-
-from fastapi import FastAPI, HTTPException, Request
+from fastapi import FastAPI, Request
 from pydantic import BaseModel
-import chromadb
-from chromadb.config import Settings
-import requests
+from langchain_community.vectorstores import Chroma
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain.chains import RetrievalQA
+from langchain.llms import Ollama
 
+# FastAPI-käyttöliittymä
 app = FastAPI()
 
-# Alusta ChromaDB client oikeasta polusta
-client = chromadb.PersistentClient(path="./VectorDB/chroma")
-collection = client.get_or_create_collection(name="local-rag")
+# Pysyvä tietokanta
+db = Chroma(
+    persist_directory="./chroma_db",
+    embedding_function=OllamaEmbeddings(model="llama3"),
+    client_settings=Chroma.get_default_client_settings()
+)
 
-class QuestionRequest(BaseModel):
+# Hakuagentti
+qa_chain = RetrievalQA.from_chain_type(
+    llm=Ollama(model="llama3"),
+    retriever=db.as_retriever(),
+    return_source_documents=False
+)
+
+class Question(BaseModel):
     question: str
 
 @app.post("/ask")
-async def ask_question(payload: QuestionRequest):
-    question = payload.question
-
-    # Hae top 3 samankaltaisinta dokumenttia kysymykseen
+async def ask_question(request: Question):
     try:
-        results = collection.query(
-            query_texts=[question],
-            n_results=3
-        )
+        response = qa_chain.run(request.question)
+        return {"answer": response}
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Virhe tietokannassa: {e}")
-
-    documents = results.get("documents", [[]])[0]
-    if not documents:
-        return {"answer": "🤖 Ei vastausta."}
-
-    context = "\n".join(documents)
-
-    # Luo prompt vastausta varten
-    prompt = f"Konteksti:\n{context}\n\nKysymys: {question}\nVastaus:"
-
-    # Lähetä pyyntö Ollamalle
-    try:
-        response = requests.post(
-            "http://localhost:11434/api/generate",
-            json={
-                "model": "llama3",
-                "prompt": prompt,
-                "stream": False
-            },
-            timeout=60
-        )
-        response.raise_for_status()
-        data = response.json()
-        return {"answer": data.get("response", "🤖 Ei vastausta.")}
-    except requests.RequestException as e:
-        raise HTTPException(status_code=500, detail=f"Ollama-virhe: {e}")
-
-
-@app.get("/")
-def index():
-    return {"message": "RAG-palvelu toimii."}
+        return {"error": str(e)}

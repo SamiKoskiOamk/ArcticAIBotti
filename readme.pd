@@ -48,15 +48,23 @@ ollama create
 Dockerin kaikki rimpsut laittaa se varmasti puhtaalta pöydältä:
 docker build --no-cache -t aaibot-rag .
 docker rm -f aaibot-rag
-docker run -d -p 8000:8000 -p 11434:11434 --name aaibot-rag aaibot-rag
+docker run -d -p 8000:8000 --name aaibot-rag aaibot-rag
 
 tai jos ei tarvi ihan puhtaalta niin:
-docker rm -f aaibot-rag
 docker build -t aaibot-rag .
-docker run -d -p 8000:8000 -p 11434:11434 --name aaibot-rag aaibot-rag
+docker rm -f aaibot-rag
+docker run -d -p 8000:8000 --name aaibot-rag aaibot-rag
 
+jos ei starttaa tai muuten vaan toimi niin voit tarkistaa mitä herjoja heittelee:
+docker logs aaibot-rag
 
-
+Jos projektissa on docker-compose.yml, niinkuin nyt on, voit käynnistää myös:
+docker compose up -d --build
+ja tarkistaa onko kaikki käynnissä:
+docker ps
+(pitäs näkyä aaibot-rag ja ollama)
+Sitte, kun haluat kontin kiinni niin: 
+docker compose down
 
 Node.js-proxyn server.js porttiin 8000
 https://docs.docker.com/desktop/features/wsl/#wsl-2-security-in-docker-desktop

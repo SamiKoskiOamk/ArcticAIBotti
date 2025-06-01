@@ -1,10 +1,13 @@
-fastapi==0.110.0
-uvicorn==0.29.0
-numpy==1.26.4
-scikit-learn==1.4.1.post1
-sentence-transformers==2.2.2
-huggingface-hub==0.14.1
-chromadb==0.4.24
+fastapi
+uvicorn
+numpy
+scikit-learn
+sentence-transformers
+huggingface-hub
+langchain
+langchain-community
+jq
+chromadb
 pydantic
 setuptools
 typing-extensions
@@ -12,4 +15,4 @@ requests
 beautifulsoup4
 python-dotenv
 tf-keras
-ollama==0.1.6
+ollama

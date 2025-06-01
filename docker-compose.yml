@@ -1,0 +1,13 @@
+version: '3.8'
+
+services:
+  aaibot-rag:
+    build: .
+    container_name: aaibot-rag
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./VectorDB:/app/VectorDB
+    environment:
+      - OLLAMA_HOST=http://localhost:11434
+    restart: unless-stopped

@@ -1,41 +1,33 @@
-# rag_vector/embedder.py
+from langchain_community.document_loaders import JSONLoader
+from langchain_community.embeddings import OllamaEmbeddings
+from langchain_community.vectorstores import Chroma
+from langchain.text_splitter import RecursiveCharacterTextSplitter
+import pathlib
 
-import os
-import json
-from sentence_transformers import SentenceTransformer
-import chromadb
-from chromadb.config import Settings
+# Kaikki .jsonl-tiedostot VectorDB-hakemistosta ja alihakemistoista
+jsonl_files = list(pathlib.Path("VectorDB").rglob("*.jsonl"))
 
-# Luo ChromaDB client pysyvään kansioon
-client = chromadb.PersistentClient(path="./VectorDB/chroma")
-collection = client.get_or_create_collection(name="local-rag")
+# Ladataan dokumentit
+documents = []
+for file_path in jsonl_files:
+    loader = JSONLoader(
+        file_path=file_path,
+        jq_schema=".content",
+        text_content=False,
+        metadata_func=lambda x, _: {"source": x.get("source", "unknown")},
+    )
+    documents.extend(loader.load())
 
-# Lataa SentenceTransformer embedder
-print("🔄 Ladataan SentenceTransformer-malli...")
-model = SentenceTransformer("all-MiniLM-L6-v2")
-print("✅ Malli ladattu.")
+# Jaetaan paloihin
+splitter = RecursiveCharacterTextSplitter(chunk_size=500, chunk_overlap=50)
+docs = splitter.split_documents(documents)
 
-# Lue kaikki jsonl-tiedostot kansiosta ja alikansioista
-total_docs = 0
-for root, dirs, files in os.walk("./VectorDB"):
-    for file in files:
-        if file.endswith(".jsonl"):
-            full_path = os.path.join(root, file)
-            print(f"📄 Käsitellään tiedosto: {full_path}")
-            with open(full_path, "r", encoding="utf-8") as f:
-                for i, line in enumerate(f):
-                    try:
-                        obj = json.loads(line)
-                        content = obj.get("text") or obj.get("content")
-                        if content:
-                            embedding = model.encode(content).tolist()
-                            collection.add(
-                                documents=[content],
-                                embeddings=[embedding],
-                                ids=[f"{file}_{i}"]
-                            )
-                            total_docs += 1
-                    except json.JSONDecodeError:
-                        print(f"⚠️ Virhe JSON-rivissä tiedostossa: {full_path}")
+# Luodaan Chroma-tietokanta
+db = Chroma.from_documents(
+    docs,
+    embedding=OllamaEmbeddings(model="llama3"),
+    persist_directory="./chroma_db",
+    client_settings=Chroma.get_default_client_settings()  # uusi tapa
+)
 
-print(f"✅ Embedding valmis. Indeksoituja dokumentteja: {total_docs}")
+db.persist()
