@@ -1,64 +1,31 @@
-(function() {
-  const style = `
-    #ai-widget { position:fixed; top:20px; right:20px; width:500px; font-family:sans-serif; }
-    #ai-box { background:white; border:1px solid #ccc; padding:10px; border-radius:8px; box-shadow:0 2px 8px rgba(0,0,0,0.2); }
-    #ai-response { margin-top:10px; min-height:50px; white-space:pre-wrap; }
-    #ai-input { width:100%; padding:8px; border:1px solid #ccc; border-radius:4px; box-sizing: border-box; }
-    #ai-button { margin-top:5px; width:100%; padding:8px; background:#007bff; color:white; border:none; border-radius:4px; cursor:pointer; }
-  `;
+// site-widget.js
+document.addEventListener('DOMContentLoaded', () => {
+  const form = document.createElement('form');
+  const input = document.createElement('input');
+  const button = document.createElement('button');
+  const responseDiv = document.createElement('div');
 
-  const html = `
-    <div id="ai-widget">
-      <div id="ai-box">
-          <div id="ai-info">
-          Tämä on paikallisesti toimiva webpage hakukone-widget, <br>
-          jonka voit lisätä verkkosivullesi yhdellä rivillä. <br>
-          Tämän toiminnallisuus site-widget.js javascriptissä. <br>
-          Vaatii toimiakseen ennakkoon tehdyn vektoroidun datan <br>
-          ja paikallisesti pyörivän kielimallin, <br>
-          kuten Ollama llama3.<br>
-          </p>
-          </div>
-        <input type="text" id="ai-input" placeholder="💬 Kysy mitä haluat tietää..." />
-        <button id="ai-button">Kysy</button>
-        <div id="ai-response"></div>
-      </div>
-    </div>
-  `;
+  input.type = 'text';
+  input.placeholder = 'Kysy jotain...';
+  button.type = 'submit';
+  button.innerText = 'Kysy';
 
-  const styleEl = document.createElement('style');
-  styleEl.innerText = style;
-  document.head.appendChild(styleEl);
+  form.appendChild(input);
+  form.appendChild(button);
+  document.body.appendChild(form);
+  document.body.appendChild(responseDiv);
 
-  const wrapper = document.createElement('div');
-  wrapper.innerHTML = html;
-  document.body.appendChild(wrapper);
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const question = input.value;
 
-async function sendToBackend(message) {
-  try {
-    const response = await fetch("http://localhost:8000/ask", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        model: "llama3",
-        prompt: message,
-        stream: false
-      })
+    const res = await fetch('http://localhost:8000/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question })
     });
-    const data = await response.json();
-    return data.response || "🤖 Ei vastausta.";
-  } catch (err) {
-    return `❌ Virhe: ${err.message}`;
-  }
-}
 
-
-  document.getElementById("ai-button").onclick = async () => {
-    const input = document.getElementById("ai-input").value;
-    const responseEl = document.getElementById("ai-response");
-    responseEl.innerHTML = "🤖 Muodostan vastausta kysymyksen ja paikallisen tietokannan avulla..";
-
-    const answer = await sendToBackend(input);
-    responseEl.innerHTML = `<strong>Vastaus:</strong><br>${answer}`;
-  };
-})();
+    const data = await res.json();
+    responseDiv.innerText = data.answer || 'Ei vastausta';
+  });
+});

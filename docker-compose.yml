@@ -1,4 +1,4 @@
-version: '3.8'
+version: "3.9"
 
 services:
   aaibot-rag:
@@ -10,4 +10,3 @@ services:
       - ./VectorDB:/app/VectorDB
     environment:
       - OLLAMA_HOST=http://localhost:11434
-    restart: unless-stopped

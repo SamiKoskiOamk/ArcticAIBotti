@@ -1,13 +1,12 @@
 fastapi
 uvicorn
-langchain-core
-langchain-chroma
-langchain-ollama
-ollama
 numpy
 scikit-learn
 sentence-transformers
 huggingface-hub
+langchain-community
+langchain-ollama
+langchain-chroma
 jq
 chromadb
 pydantic
@@ -16,4 +15,3 @@ typing-extensions
 requests 
 beautifulsoup4
 python-dotenv
-tf-keras

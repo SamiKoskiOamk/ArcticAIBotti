@@ -4,11 +4,33 @@ testisivusto: https://samikoskioamk.github.io/ArcticAIBotti/
 Linuxissa pitää ajaa virtual environmentissä, joten luo se eka. Esim:
 python3 -m venv AAIBOT
 source AAIBOT/bin/activate
-Sitten aja tässä jo kaikki projektin tarvitsemat kirjastot: pip install -r requirements.txt
 Käynnistä VS Code: code .
 Kun VS Code käynnissä, muista valita oikea Python Interpreter (ctrl-shif-p)
-Listalta luomasi venv, eli tässä tapauksessa tuo AAIBOT
+Listalta luomasi venv, eli tässä tapauksessa tuo AAIBOT tai sitten se minkä loit.
 
+✅ 1. Ollama-kontti
+Pyörittää LLM-mallia (nomic-embed-text + mahdollisesti myös llama3).
+Palvelee portissa 11434.
+Käytetään sekä vektorointiin (embedder.py) että chattiin (app.py tai vastaava).
+
+✅ 2. Vector-kontti (rag_vector)
+Sisältää embedder.py-skriptin.
+Lataa .jsonl-tiedoston, generoi embeddingit erissä, ja tallentaa ne suoraan ChromaDB:n persistent-kansioon.
+Toimii erillään Ollama-kontista mutta käyttää sitä embedding-palveluna.
+
+
+Käynnistä dockerit.
+1. Ollama, eli kielimalli joka muodostaa meille vastaukset
+cd ollama / ls / ./ollama-kontti-build.sh
+Pitäisi latailla ollaman ja sen libaryt ja lopuksi:
+✅ Ollama on nyt käynnissä verkossa 'rag-network' konttinimellä 'ollama-container'
+Eli tämä loi nyt samalla paikallisen "rag-network":n, jossa eri kontit keskenään keskustelee.
+Tässä tapauksessa ollama-container kuuntelee pyyntöjä paikallisesti portissa :11434 (määritelty docker-compose.yml)
+
+2. Rag_vector
+Tämä palvelu käyttää RAG-mallia yhdistämään kyselyn ja paikallisen tietokannan ja lähettää tämän
+ollama-containeriin, joka muodostaa siitä kielimallin avulla ymmärrettävän vastauksen.
+Käynnistä RAG Vector: ./rag-container-build.sh
 
 Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
 Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
@@ -57,6 +79,11 @@ docker run -d -p 8000:8000 --name aaibot-rag aaibot-rag
 
 jos ei starttaa tai muuten vaan toimi niin voit tarkistaa mitä herjoja heittelee:
 docker logs aaibot-rag
+Tai: 
+docker logs aaibot-rag | tail -n 50
+
+Scripti joka poistaa vanhat dockerit, kääntää uudet ja käynnistää ne taustalle:
+rebuild.sh
 
 Jos projektissa on docker-compose.yml, niinkuin nyt on, voit käynnistää myös:
 docker compose up -d --build
@@ -74,12 +101,22 @@ https://learn.microsoft.com/en-gb/windows/wsl/tutorials/wsl-vscode
 commit testing
 
 
-VectorDB rakenne
-ArcticAI-botti-WSL/
-├── VectorDB/                  ← Käytettävä data. JSONL-tiedostot alikansioineen, jotka ite crawlattu.
-├── rag_vector/
-│   ├── app.py                 ← FastAPI-palvelin
-│   ├── embedder.py            ← Embeddingien luonti
-│   ├── query.py               ← Haku logiikka
-│   └── db/                    ← ChromaDB-tietokanta
-└── Dockerfile                 ← päivitetään tämän mukaan
+Kontit:
++----------------+       +--------------------------+
+| Ollama Server  | <---> |  rag_vector service      |
+| (llama3-malli) |       |  (FastAPI + vektorointi) |
++----------------+       +--------------------------+
+                                |
+                                v
+                        +----------------+
+                        |  ChromaDB      |
+                        +----------------+
+
+
+
+Todo:
+- FastAPI ja embedder omaan konttiinsa. Päivitä nämä ohjeet miten toimitaan.
+- Täydelliset ohjeet miten laitat toimimaan omassa Linux-ympäristössä.
+- docker myös crawlerille
+- web-sivun mobile skaalaus
+- data vektorointi tekee automaattisesti domainin perusteella folderin, jonne .jsonl. Päivittää, jos samasta uudempi.

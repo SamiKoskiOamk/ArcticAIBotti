@@ -1,34 +1,18 @@
-from fastapi import FastAPI, Request
-from pydantic import BaseModel
-from langchain_community.vectorstores import Chroma
-from langchain_community.embeddings import OllamaEmbeddings
+from fastapi import FastAPI
+from langchain_ollama import ChatOllama
+from langchain_ollama.embeddings import OllamaEmbeddings
+from langchain_chroma import Chroma
 from langchain.chains import RetrievalQA
-from langchain.llms import Ollama
 
-# FastAPI-käyttöliittymä
+
+embedding = OllamaEmbeddings(model="llama3", base_url="http://ollama:11434")
+db = Chroma(persist_directory="VectorDB/oamkjournal", embedding_function=embedding)
+
+qa = RetrievalQA.from_chain_type(llm=ChatOllama(model="llama3", base_url="http://ollama:11434"),
+                                 retriever=db.as_retriever())
+
 app = FastAPI()
 
-# Pysyvä tietokanta
-db = Chroma(
-    persist_directory="./chroma_db",
-    embedding_function=OllamaEmbeddings(model="llama3"),
-    client_settings=Chroma.get_default_client_settings()
-)
-
-# Hakuagentti
-qa_chain = RetrievalQA.from_chain_type(
-    llm=Ollama(model="llama3"),
-    retriever=db.as_retriever(),
-    return_source_documents=False
-)
-
-class Question(BaseModel):
-    question: str
-
-@app.post("/ask")
-async def ask_question(request: Question):
-    try:
-        response = qa_chain.run(request.question)
-        return {"answer": response}
-    except Exception as e:
-        return {"error": str(e)}
+@app.get("/ask")
+def ask(q: str):
+    return qa.run(q)
