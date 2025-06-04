@@ -3,15 +3,11 @@ uvicorn
 numpy
 scikit-learn
 sentence-transformers
-huggingface-hub
 langchain-community
 langchain-ollama
 langchain-chroma
-jq
 chromadb
 pydantic
-setuptools
 typing-extensions
 requests 
-beautifulsoup4
 python-dotenv

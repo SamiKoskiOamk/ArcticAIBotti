@@ -1,15 +1,9 @@
 # Aibotti
 testisivusto: https://samikoskioamk.github.io/ArcticAIBotti/
 
-Linuxissa pitää ajaa virtual environmentissä, joten luo se eka. Esim:
-python3 -m venv AAIBOT
-source AAIBOT/bin/activate
-Käynnistä VS Code: code .
-Kun VS Code käynnissä, muista valita oikea Python Interpreter (ctrl-shif-p)
-Listalta luomasi venv, eli tässä tapauksessa tuo AAIBOT tai sitten se minkä loit.
 
 ✅ 1. Ollama-kontti
-Pyörittää LLM-mallia (nomic-embed-text + mahdollisesti myös llama3).
+Pyörittää LLM-mallia (nomic-embed-text tiedostokäsittelyyn + llama3 vastauksen muodostamiseen).
 Palvelee portissa 11434.
 Käytetään sekä vektorointiin (embedder.py) että chattiin (app.py tai vastaava).
 
@@ -17,102 +11,43 @@ Käytetään sekä vektorointiin (embedder.py) että chattiin (app.py tai vastaa
 Sisältää embedder.py-skriptin.
 Lataa .jsonl-tiedoston, generoi embeddingit erissä, ja tallentaa ne suoraan ChromaDB:n persistent-kansioon.
 Toimii erillään Ollama-kontista mutta käyttää sitä embedding-palveluna.
+Kuuntelee ulkoapäin porttia 8000.
+On yhteydessä ollama-konttiin rag-network kautta.
 
 
-Käynnistä dockerit.
-1. Ollama, eli kielimalli joka muodostaa meille vastaukset
-cd ollama / ls / ./ollama-kontti-build.sh
-Pitäisi latailla ollaman ja sen libaryt ja lopuksi:
-✅ Ollama on nyt käynnissä verkossa 'rag-network' konttinimellä 'ollama-container'
-Eli tämä loi nyt samalla paikallisen "rag-network":n, jossa eri kontit keskenään keskustelee.
-Tässä tapauksessa ollama-container kuuntelee pyyntöjä paikallisesti portissa :11434 (määritelty docker-compose.yml)
-
-2. Rag_vector
-Tämä palvelu käyttää RAG-mallia yhdistämään kyselyn ja paikallisen tietokannan ja lähettää tämän
-ollama-containeriin, joka muodostaa siitä kielimallin avulla ymmärrettävän vastauksen.
-Käynnistä RAG Vector: ./rag-container-build.sh
 
 Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
 Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
 
 Ohjeet miten saat pyörimään omalla koneellasi ja omalla datallasi.
 
-Ollama linuxissa:
-asenna: curl -fsSL https://ollama.com/install.sh | sh
-käynnistä: 
-ollama serve &  (en tiiä tarviiko. Voi nakkoa erroria.)
-ollama run llama3
-tarkista onko jo päällä:
-(AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$ curl http://localhost:11434
-Ollama is running(AAIBOT) samikoski@SamiPC:~/ArcticAI-botti-WSL$
-KÄynnistä kielimalli linux kehoitteesta: ollama run llama3
-Kun et enää tarvi "killall ollama" tai jos syvemmällä niin "sudo pkill -u ollama"
+1. Kloonaa repositorio
+git clone https://github.com/kayttaja/ArcticAIBotti.git
+cd ArcticAIBotti
 
+2. Varmista kansiorakenne
+docker-compose.yml
+VectorDB/          ← sisältää .jsonl -tiedostoja
+rag_vector/
+├── Dockerfile
+├── app.py
+├── embedder.py
+├── requirements.txt
 
+3. Käynnistä Ollama-container ensin
+docker compose up -d ollama-container
 
-Docker, eli kontti.
-Jos pyörität palvelua Windows koneella tarvit dockerin ja WSL:n (Windows Subsystem Linux)
-Asenna ensin Docker: https://www.docker.com/products/docker-desktop/
-Sen jälkeen avaa Windows Powershell (komentokehoiteikkuna) 
-ja asenna WSL: wsl --install  
-(By default, the installed Linux distribution will be Ubuntu)
-Käynnistä Ubuntu windows start-valikosta ja luo käyttäjätunnukset.
-Kun olet kirjautunut Ubuntuun, on suositeltavaa päivittää paketit: sudo apt update && sudo apt upgrade
-Ubuntussa "explorer.exe ." näyttää kansion missä järjestelmä on. On suositeltavaa säilyttää projektin tiedostot samassa järjestelmässä.
+4. Varmista että Ollamassa on oikea malli
+docker exec -it ollama-container ollama pull nomic-embed-text
 
-Kopioi kaikki JSONL-tiedostot polusta ./VectorDB/ alikansioineen
-Yhdistää ne automaattisesti yhteen tiedostoon: all-data.jsonl
-Luo Ollama-mallin nimeltä oma-malli, joka käyttää all-data.jsonl-embeddingejä
-Käynnistää:
-ollama serve
-ollama create
+5. Rakenna ja aja rag-vector-kontti (rag_vector kansiosta löytyy)
+./rag-container-build.sh
 
-Dockerin kaikki rimpsut laittaa se varmasti puhtaalta pöydältä:
-docker build --no-cache -t aaibot-rag .
-docker rm -f aaibot-rag
-docker run -d -p 8000:8000 --name aaibot-rag aaibot-rag
+6. Testaa API:
+http://localhost:8000/docs
 
-tai jos ei tarvi ihan puhtaalta niin:
-docker build -t aaibot-rag .
-docker rm -f aaibot-rag
-docker run -d -p 8000:8000 --name aaibot-rag aaibot-rag
-
-jos ei starttaa tai muuten vaan toimi niin voit tarkistaa mitä herjoja heittelee:
-docker logs aaibot-rag
-Tai: 
-docker logs aaibot-rag | tail -n 50
-
-Scripti joka poistaa vanhat dockerit, kääntää uudet ja käynnistää ne taustalle:
-rebuild.sh
-
-Jos projektissa on docker-compose.yml, niinkuin nyt on, voit käynnistää myös:
-docker compose up -d --build
-ja tarkistaa onko kaikki käynnissä:
-docker ps
-(pitäs näkyä aaibot-rag ja ollama)
-Sitte, kun haluat kontin kiinni niin: 
-docker compose down
-
-Node.js-proxyn server.js porttiin 8000
-https://docs.docker.com/desktop/features/wsl/#wsl-2-security-in-docker-desktop
-
-https://learn.microsoft.com/en-gb/windows/wsl/tutorials/wsl-vscode
-
-commit testing
-
-
-Kontit:
-+----------------+       +--------------------------+
-| Ollama Server  | <---> |  rag_vector service      |
-| (llama3-malli) |       |  (FastAPI + vektorointi) |
-+----------------+       +--------------------------+
-                                |
-                                v
-                        +----------------+
-                        |  ChromaDB      |
-                        +----------------+
-
-
+7. Avaa ja testaa HTML-chat
+Avaa index.html selaimessa tai Live Serverillä ja testaa kysely.
 
 Todo:
 - FastAPI ja embedder omaan konttiinsa. Päivitä nämä ohjeet miten toimitaan.

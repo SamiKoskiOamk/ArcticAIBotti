@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', () => {
   spinner.style.color = '#888';
   spinner.classList.add('spinner');
 
-  // Dotting effect CSS (lisätään tyylit dynaamisesti)
+  // Dotting effect CSS
   const style = document.createElement('style');
   style.innerHTML = `
     .dotting::after {
@@ -95,7 +95,11 @@ document.addEventListener('DOMContentLoaded', () => {
     spinner.style.display = 'block';
 
     try {
-      const res = await fetch('http://localhost:8000/ask?q=' + encodeURIComponent(question));
+      const res = await fetch('http://localhost:8000/query', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ question })
+      });
       const data = await res.json();
 
       spinner.style.display = 'none';

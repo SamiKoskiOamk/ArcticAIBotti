@@ -13,8 +13,8 @@ echo "🚀 Käynnistetään uusi Ollama-kontti verkossa 'rag-network'..."
 docker run -d \
   --name ollama-container \
   --network rag-network \
-  -e OLLAMA_HOST=0.0.0.0 \
-  ollama-container
+  -p 11434:11434 \
+  ollama/ollama
 
 echo "⏳ Odotetaan hetki, että Ollama käynnistyy..."
 sleep 5

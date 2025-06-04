@@ -1,12 +1,37 @@
 version: "3.9"
 
+networks:
+  rag-network:
+    driver: bridge
+
+volumes:
+  ollama-data:
+
 services:
-  aaibot-rag:
-    build: .
-    container_name: aaibot-rag
+  ollama-container:
+    image: ollama/ollama
+    container_name: ollama-container
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama-data:/root/.ollama
+    networks:
+      - rag-network
+    restart: unless-stopped
+
+  rag-vector:
+    build:
+      context: ./rag_vector
+      dockerfile: Dockerfile
+    container_name: rag-vector
     ports:
       - "8000:8000"
     volumes:
-      - ./VectorDB:/app/VectorDB
+      - ./rag_vector/VectorDB:/app/VectorDB
     environment:
-      - OLLAMA_HOST=http://localhost:11434
+      - OLLAMA_HOST=http://ollama-container:11434
+    depends_on:
+      - ollama-container
+    networks:
+      - rag-network
+    restart: unless-stopped

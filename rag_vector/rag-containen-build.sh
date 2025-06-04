@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # Asetukset
-MODEL_NAME="nomic-embed-text"
+MODELS=("nomic-embed-text" "llama3")
 OLLAMA_CONTAINER="ollama-container"
 
 echo "🌐 Varmistetaan Docker-verkko..."
@@ -23,6 +23,7 @@ docker run -d \
     --network rag-network \
     -e OLLAMA_BASE_URL=http://ollama-container:11434 \
     -p 8000:8000 \
+    -v "$(pwd)/VectorDB:/app/VectorDB" \
     rag-vector
 
 echo "⏳ Odotetaan 5 sekuntia palvelimen käynnistymistä..."
@@ -34,15 +35,17 @@ if ! docker ps --format '{{.Names}}' | grep -q "$OLLAMA_CONTAINER"; then
     exit 1
 fi
 
-# 🧠 Tarkistetaan onko malli ladattu, jos ei niin vedetään
-echo "📦 Tarkistetaan onko malli '$MODEL_NAME' jo ladattu Ollama-kontissa..."
-docker exec "$OLLAMA_CONTAINER" ollama show "$MODEL_NAME" >/dev/null 2>&1
-if [ $? -ne 0 ]; then
-    echo "⬇️ Ladataan malli '$MODEL_NAME' Ollama-konttiin..."
-    docker exec "$OLLAMA_CONTAINER" ollama pull "$MODEL_NAME"
-else
-    echo "✅ Malli '$MODEL_NAME' on jo ladattu."
-fi
+# 🧠 Tarkistetaan mallien saatavuus
+for MODEL in "${MODELS[@]}"; do
+  echo "📦 Tarkistetaan onko malli '$MODEL' jo ladattu Ollama-konttiin..."
+  docker exec "$OLLAMA_CONTAINER" ollama show "$MODEL" >/dev/null 2>&1
+  if [ $? -ne 0 ]; then
+      echo "⬇️ Ladataan malli '$MODEL' Ollama-konttiin..."
+      docker exec "$OLLAMA_CONTAINER" ollama pull "$MODEL"
+  else
+      echo "✅ Malli '$MODEL' on jo ladattu."
+  fi
+done
 
 # 🔁 Aja embedder.py kontissa
 echo "🧠 Ajetaan embedder.py kontissa..."
