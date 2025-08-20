@@ -1,22 +1,21 @@
 #!/bin/bash
-# start_intrabot.sh
+# start_venv.sh
 
-# Projektikansio
 PROJECT_DIR="$HOME/Intrabot"
-VENV_DIR="$PROJECT_DIR/venv"
+VENV_DIR="$PROJECT_DIR/intrabot-venv"
 
-# Siirrytään projektikansioon
-cd "$PROJECT_DIR" || exit
+cd "$PROJECT_DIR" || exit 1
 
-# Jos venv-kansiota ei ole, luodaan se
+# Luo venv jos sitä ei ole
 if [ ! -d "$VENV_DIR" ]; then
     echo "Virtuaaliympäristöä ei löytynyt, luodaan uusi..."
-    python3 -m venv intrabot
+    python3 -m venv "$VENV_DIR" || { echo "Venvin luonti epäonnistui"; exit 1; }
 fi
 
-# Aktivoidaan virtuaaliympäristö
+# Aktivoi venv
 echo "Aktivoidaan virtuaaliympäristö..."
 source "$VENV_DIR/bin/activate"
 
-# Jätetään käyttäjä aktiiviseen ympäristöön
+# Jätä käyttäjä aktiiviseen ympäristöön
 exec "$SHELL"
+
