@@ -1,3 +1,6 @@
+#Tämä scripti käynnistää virtual environmentin bottidevausta varten
+# Ajetaan source start_venv.sh
+
 #!/bin/bash
 # start_venv.sh
 
@@ -12,10 +15,10 @@ if [ ! -d "$VENV_DIR" ]; then
     python3 -m venv "$VENV_DIR" || { echo "Venvin luonti epäonnistui"; exit 1; }
 fi
 
-# Aktivoi venv
+# Aktivoi venv nykyisessä shellissä
 echo "Aktivoidaan virtuaaliympäristö..."
 source "$VENV_DIR/bin/activate"
 
-# Jätä käyttäjä aktiiviseen ympäristöön
-exec "$SHELL"
-
+# Tarkista että ollaan venvissä
+echo "Python-polku: $(which python3)"
+echo "Virtuaaliympäristö aktivoitu."
