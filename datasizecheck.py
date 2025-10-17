@@ -112,8 +112,20 @@ def crawl_check_data(
         return {"error": str(e)}
 
 
+    # Tämä file:
+    # - käy läpi annetun juuriosoitteen sisäiset linkit (sama domain/relatiiviset)
+    # - nappaa sivujen näkyvän tekstin
+    # - laskee karkean merkkien/sanojen/tokeneiden määrän
+    # - arvioi chunkit ja vektorivaraston koon
+    # - palauttaa listan “sisällöllisistä” sivuista
     
-    #palvelimen käynnistys: uvicorn datasizecheck:app --reload --port 8000
+    #palvelimen käynnistys: 
+    # cd ~/Intrabot
+    # uvicorn datasizecheck:app --reload --port 8000
+    
+    # Web widget on hostattu GitHub Pages kautta ja löytyy: 
+    # https://samikoskioamk.github.io/ArcticAIBotti/
+
     #palvelin stop ctrl-c
     #pitää automatisoida jotenkin. Katso tähän sitten ohjeet erikseen, kun muuten toimii.
 
