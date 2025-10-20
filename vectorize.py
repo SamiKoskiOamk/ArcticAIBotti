@@ -201,5 +201,50 @@ Kirjoittaa JSONL-tiedostoon rivin per chunk:
 Tallennuspolku:
 E:\AI-botti\vektordata\<folder parametri web-sivulta>\ <timestamp>.jsonl
 (timestamp muodossa YYYY-MM-DD-HHMMSS)
+
+
+VectorDB (vektoritietokanta) on RAG-järjestelmän “muisti” — se tallentaa tekstien merkityssisällöt 
+embedding-muodossa ja mahdollistaa niiden nopean semanttisen haun.
+Esimerkkitietue VectorDB:ssä:
+{
+  "id": "chunk_00045",
+  "embedding": [0.123, -0.045, 0.678, ...],
+  "metadata": {
+    "source_url": "https://www.oamk.fi/fi/hankkeet/tekoaly",
+    "doc_index": 5,
+    "chunk_index": 2,
+    "timestamp": "2025-10-20-141532"
+  },
+  "text": "Oamk on mukana useissa tekoälyyn ja koneoppimiseen liittyvissä kehityshankkeissa, 
+  joiden tavoitteena on edistää koulutusta ja alueellista innovaatiotoimintaa."
+}
+Tehokkuuden syyt:
+
+Merkityspohjainen haku:
+Hakee sisältöä merkityksen eikä pelkkien sanojen perusteella.
+Esim. kysymykset “Oamkin tekoälyhankkeet” ja “AI-projektit Oamkissa” löytävät samat dokumentit.
+
+Nopea lähimmän naapurin haku:
+VectorDB:t (kuten ChromaDB, FAISS, Milvus) käyttävät tehokkaita ANN (Approximate Nearest Neighbor) -algoritmeja, 
+jotka löytävät relevantit embeddingit miljoonien joukosta sekunneissa.
+
+Joustava skaalaus:
+Voi indeksoida tuhansia tai miljoonia tekstipaloja ilman, että mallia tarvitsee uudelleenkouluttaa.
+
+Erottelu & metadata:
+Jokaisella embeddingillä voi olla kontekstia — kuten lähde-URL, aikaleima, dokumenttityyppi 
+— mikä tekee hakutuloksista tarkempia.
+
+
+Embedding
+Embedding on tapa kuvata tekstin (tai kuvan, äänen, tms.) merkitys numeerisesti — eli muuttaa sanat vektoriksi: pitkäksi numerosarjaksi, 
+joka kertoo mitä teksti tarkoittaa, ei vain mitä sanoja siinä on.
+“Oamk on ammattikorkeakoulu Oulussa.”
+[0.14, -0.23, 0.05, 0.48, -0.11, 0.09, -0.30, 0.22, 0.01, 0.17, ...]
+Embedding-mallin idea on, että merkitykseltään samankaltaiset tekstit sijoittuvat lähelle toisiaan tässä 
+monidimensionaalisessa “vektoriavaruudessa”.
+
+embeddingit mahdollistavat semanttisen haun — hakemisen merkityksen perusteella, ei vain sanojen.
+
 '''
 
