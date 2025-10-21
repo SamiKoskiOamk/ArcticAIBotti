@@ -1,25 +1,25 @@
-# Aibotti
-testisivusto: https://samikoskioamk.github.io/ArcticAIBotti/
+Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
+Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
+
+Youtube-video toiminnallisuudesta: 
+https://drive.google.com/file/d/19zHkOFfWKOmJ_1GE08xTtHjEbPW5RWMi/view?usp=sharing
 
 
-✅ 1. Ollama-kontti
+Toiminnallisuus sisältää 2 Konttia (Docker / Linux):
+Ollama-kontti
 Pyörittää LLM-mallia (nomic-embed-text tiedostokäsittelyyn + llama3 vastauksen muodostamiseen).
 Palvelee portissa 11434.
 Käytetään sekä vektorointiin (embedder.py) että chattiin (app.py tai vastaava).
 
-✅ 2. Vector-kontti (rag_vector)
+Vector-kontti (rag_vector)
 Sisältää embedder.py-skriptin.
 Lataa .jsonl-tiedoston, generoi embeddingit erissä, ja tallentaa ne suoraan ChromaDB:n persistent-kansioon.
 Toimii erillään Ollama-kontista mutta käyttää sitä embedding-palveluna.
 Kuuntelee ulkoapäin porttia 8000.
 On yhteydessä ollama-konttiin rag-network kautta.
 
-
-
-Paikallisesti toimiva AI-hakubotti, joka vektorisoi verkkosivun sisällön ja vastaa kysymyksiin Ollama-kielimallin avulla. 
-Toteutettu FastAPI + Ollama + HTML/JS-pohjalla.
-
 Ohjeet miten saat pyörimään omalla koneellasi ja omalla datallasi.
+Katso videosta lisää.
 
 1. Kloonaa repositorio
 git clone https://github.com/kayttaja/ArcticAIBotti.git
@@ -48,13 +48,6 @@ http://localhost:8000/docs
 
 7. Avaa ja testaa HTML-chat
 Avaa index.html selaimessa tai Live Serverillä ja testaa kysely.
-
-Todo:
-- FastAPI ja embedder omaan konttiinsa. Päivitä nämä ohjeet miten toimitaan.
-- Täydelliset ohjeet miten laitat toimimaan omassa Linux-ympäristössä.
-- docker myös crawlerille
-- web-sivun mobile skaalaus
-- data vektorointi tekee automaattisesti domainin perusteella folderin, jonne .jsonl. Päivittää, jos samasta uudempi.
 
 
 Konttien käynnistys puhtaalta pöydältä:
