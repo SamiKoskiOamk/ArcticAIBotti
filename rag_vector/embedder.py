@@ -7,7 +7,7 @@ import chromadb
 
 print("🔧 embedder.py aloitettu")
 
-base_dir = Path("VectorDB")
+base_dir = Path("/mnt/e/AI-botti/vektordataJsonl")
 jsonl_files = list(base_dir.rglob("*.jsonl"))
 
 if not jsonl_files:
