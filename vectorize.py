@@ -46,7 +46,7 @@ app.add_middleware(
 )
 
 # Asetukset
-BASE_DIR = "E:\\AI-botti\\vektordataJsonl"
+BASE_DIR = "/mnt/e/AI-botti/vektordataJsonl"
 CHUNK_SIZE = 500  # sanoja/chunk
 MODEL_NAME = "all-MiniLM-L6-v2"
 MAX_PAGES = 100
