@@ -1,19 +1,22 @@
 fastapi
 uvicorn
-langchain-core
+
+langchain
+langchain-community
 langchain-chroma
 langchain-ollama
-ollama
-numpy
-scikit-learn
+
+# Vektorit ja mallikirjastot
+chromadb
 sentence-transformers
 huggingface-hub
-jq
-chromadb
-pydantic
-setuptools
-typing-extensions
-requests 
+numpy
+scikit-learn
+
+# Muut
+requests
 beautifulsoup4
 python-dotenv
-tf-keras
+typing-extensions
+pydantic
+setuptools
