@@ -1,23 +1,35 @@
-version: "3.9"
+# docker-compose.yml — WSL Ubuntu (native dockerd), Ollama + rag-vector
+# HUOM: ei version-riviä (uudempi compose ignooraa sen kuitenkin)
 
 networks:
-  rag-network:
-    driver: bridge
+  rag-network: {}
 
 volumes:
-  ollama-data:
+  ollama-data: {}     # Ollaman mallit
+  chroma-data: {}     # Chroman pysyvä tallennus (voit korvata bind-mountilla)
 
 services:
   ollama-container:
-    image: ollama/ollama
+    image: ollama/ollama:latest
     container_name: ollama-container
     ports:
       - "11434:11434"
+    # GPU käyttöön — useimmissa compose-versioissa tämä toimii WSL:n natiivissa dockerdissa
+    gpus: all
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - OLLAMA_HOST=http://0.0.0.0:11434
+      - OLLAMA_KEEP_ALIVE=5m
     volumes:
       - ollama-data:/root/.ollama
-    networks:
-      - rag-network
     restart: unless-stopped
+    networks: [rag-network]
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://localhost:11434/api/tags >/dev/null 2>&1 || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 10s
 
   rag-vector:
     build:
@@ -26,12 +38,24 @@ services:
     container_name: rag-vector
     ports:
       - "8000:8000"
-    volumes:
-      - ./rag_vector/VectorDB:/app/VectorDB
     environment:
       - OLLAMA_HOST=http://ollama-container:11434
+      - OLLAMA_MODEL=llama3:8b
+      - PERSIST_DIR=/app/VectorDB
+      - COLLECTION_NAME=aibotti
+      - TOP_K=4
+    volumes:
+      # Chroman persistenssi kontissa (vaihda bind-mountiksi jos haluat datan E:-levylle)
+      - chroma-data:/app/VectorDB
+      # JSONL-juuren bind-mount, jotta embedder.py näkee E:\-datan WSL-polulla
+      - /mnt/e/AI-botti/vektordataJsonl:/mnt/e/AI-botti/vektordataJsonl
     depends_on:
       - ollama-container
-    networks:
-      - rag-network
     restart: unless-stopped
+    networks: [rag-network]
+    healthcheck:
+      test: ["CMD", "curl", "-fsS", "http://localhost:8000/health"]
+      interval: 10s
+      timeout: 5s
+      retries: 12
+      start_period: 15s
