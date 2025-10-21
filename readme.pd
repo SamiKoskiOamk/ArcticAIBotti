@@ -27,7 +27,7 @@ cd ArcticAIBotti
 
 2. Varmista kansiorakenne
 docker-compose.yml
-VectorDB/          ← sisältää .jsonl -tiedostoja
+VectorDB/          ← Tänne crawlaat omat sivustot .jsonl -tiedostoksi 
 rag_vector/
 ├── Dockerfile
 ├── app.py
@@ -55,3 +55,40 @@ Todo:
 - docker myös crawlerille
 - web-sivun mobile skaalaus
 - data vektorointi tekee automaattisesti domainin perusteella folderin, jonne .jsonl. Päivittää, jos samasta uudempi.
+
+
+Konttien käynnistys puhtaalta pöydältä:
+1) sammuta vanhat
+docker compose down
+
+2) rakenna rag-vector uudestaan (varmistaa uudet app.py/requirements)
+docker compose build rag-vector --no-cache
+
+3) käynnistä vain Ollama ensin
+docker compose up -d ollama-container
+
+4) vedä mallit
+docker exec -it ollama-container ollama pull llama3:8b
+docker exec -it ollama-container ollama pull nomic-embed-text
+
+5) ingestoi JSONL:t (embedder.py lukee /mnt/e/AI-botti/vektordataJsonl juuresta)
+docker compose run --rm rag-vector python embedder.py
+
+6) käynnistä API
+docker compose up -d rag-vector
+
+7) testit
+curl -s http://localhost:8000/health
+curl -G "http://localhost:8000/ask" --data-urlencode "query=Mitä on datamaturiteetti?"
+
+
+Tai yksinkertaisesti vain:
+# jos kontteja entuudestaan pystyssä:
+docker compose down
+
+#jos muokkailtu jotain dockerfilejä tai libraryjä requirements.txt filusta tai koodeja muokkailtu
+# niin suosittelen kääntämään ensin docker imaget uusiksi niin tulee muutokset mukaan:
+docker compose build --no-cache
+
+# Sitten lopuksi kontit pystyyn:
+docker compose up -d
